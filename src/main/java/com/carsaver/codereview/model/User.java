@@ -1,19 +1,33 @@
 package com.carsaver.codereview.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+
+    @Column(name = "FIRST_NAME")
     private String firstName;
+    @Column(name = "LAST_NAME")
     private String lastName;
+    @Column(name = "EMAIL")
     private String email;
+
+    @Transient
+    @JsonIgnore
     public Boolean enabled;
+
+
+    @Transient
+    @JsonIgnore
+    private String zipCode;
+
+    @Transient
+    @JsonIgnore
     private String city;
 
     public String getCity() {
@@ -32,7 +46,7 @@ public class User {
         this.zipCode = zipCode;
     }
 
-    private String zipCode;
+
 
     public Long getId() {
         return id;

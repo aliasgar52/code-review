@@ -2,25 +2,26 @@ package com.carsaver.codereview.service;
 
 import com.carsaver.codereview.model.User;
 import com.carsaver.codereview.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toMap;
 
 @Service
 public class UserService {
+
+    @Autowired
     private UserRepository repository;
+
+    @Autowired
     private EmailService emailService;
 
-    public UserService (UserRepository repository) {
-        this.repository = repository;
-    }
+
 
     public Optional<User> findById(Long id) {
         return repository.findById(id);
@@ -29,6 +30,16 @@ public class UserService {
     public List<User> findAll(){
         return repository.findAllByOrderByIdAsc();
     }
+
+
+    public User save(User user){
+        return repository.save(user);
+    }
+
+    public void deleteById(Long userId){
+        repository.deleteById(userId);
+    }
+
 
     public User updateEmail(User user, String email) {
         try {
@@ -51,10 +62,8 @@ public class UserService {
 
     public Map<Long, String> getNames() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
-                .collect(toMap(User::getId, user -> {
-                    return user.getFirstName() + ", " + user.getFirstName();
-                }));
-
+                .collect(toMap(User::getId, user ->
+                   user.getFirstName() + ", " + user.getFirstName()));
     }
 
 }

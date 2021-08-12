@@ -2,6 +2,8 @@ package com.carsaver.codereview.service;
 
 import org.springframework.stereotype.Service;
 
+
+// Need to implement runnable interface if we want Thread implementation
 @Service
 public class ZipCodeLookupService {
 
@@ -19,7 +21,7 @@ public class ZipCodeLookupService {
 
         }
 
-        return "37067";
+        return zipCode;
     }
 
 }

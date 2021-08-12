@@ -1,21 +1,24 @@
 package com.carsaver.codereview.web.api;
 
 import com.carsaver.codereview.model.User;
-import com.carsaver.codereview.repository.UserRepository;
-import com.carsaver.codereview.service.ZipCodeLookupService;
 import com.carsaver.codereview.service.EmailService;
+import com.carsaver.codereview.service.UserService;
+import com.carsaver.codereview.service.ZipCodeLookupService;
+import liquibase.pro.packaged.U;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Controller
+@RestController
 public class UserApiController {
 
+
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private EmailService emailService;
@@ -24,7 +27,7 @@ public class UserApiController {
     private ZipCodeLookupService zipCodeLookupService;
 
     @GetMapping("/users/create")
-    public User createuser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
+    public User createUser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
         User newUser = new User();
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
@@ -34,7 +37,7 @@ public class UserApiController {
             newUser.enabled = true;
         }
 
-        User user = userRepository.save(newUser);
+        User user = userService.save(newUser);
 
         if(user.isEnabled()) {
             emailService.sendConfirmation(email);
@@ -52,16 +55,16 @@ public class UserApiController {
      */
     @GetMapping("/users/updateLocation")
     public User updateUserLocation(@RequestParam Long id, @RequestParam String zipCode, @RequestParam(required = false) String city) {
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userService.findById(id).orElse(new User());
 
         user.setZipCode(zipCode);
         user.setCity(Optional.ofNullable(city).orElse(zipCodeLookupService.lookupCityByZip(zipCode)));
 
-        return userRepository.save(user);
+        return userService.save(user);
     }
 
     @GetMapping("/users/delete")
-    public void deleteUser(@RequestParam String userid) {
-        userRepository.deleteById(Long.parseLong(userid));
+    public void deleteUser(@RequestParam String userId) {
+        userService.deleteById(Long.parseLong(userId));
     }
 }
